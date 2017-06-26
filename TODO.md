@@ -1,0 +1,5 @@
+- [ ] 7 Segment Display Functions
+- [ ] Button Functions
+- [ ] Timer functions
+- [ ] Temperature up/down control
+- [ ] Unit change control

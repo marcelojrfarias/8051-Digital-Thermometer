@@ -1,5 +1,5 @@
 -muwx
--i v
+-i main.hex
 -M
 -Y
 -b HOME = 0x0000
@@ -13,6 +13,6 @@
 -l libint
 -l liblong
 -l libfloat
-v.rel
+main.rel
 
 -e
