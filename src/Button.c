@@ -29,53 +29,51 @@
  * (Note that invert cannot be implied from puEnable since an external  *
  *  pullup could be used.)                                              *
  *----------------------------------------------------------------------*/
-Button::Button(uint8_t pin, uint8_t puEnable, uint8_t invert, uint32_t dbTime)
-{
-    _pin = pin;
-    _puEnable = puEnable;
-    _invert = invert;
-    _dbTime = dbTime;
-    if (_puEnable != 0)
-        pinMode(_pin, INPUT_PULLUP);    //enable pullup resistor
+setup(struct Button* btn, unsigned char pin, unsigned char puEnable, unsigned char invert, unsigned int dbTime) {
+    btn->pin = pin;
+    btn->puEnable = puEnable;
+    btn->invert = invert;
+    btn->dbTime = dbTime;
+    if (btn->puEnable != 0)
+        pinMode(btn->pin, INPUT_PULLUP);    //enable pullup resistor
     else
-        pinMode(_pin, INPUT);
-    _state = digitalRead(_pin);
-    if (_invert != 0) _state = !_state;
-    _time = millis();
-    _lastState = _state;
-    _changed = 0;
-    _lastChange = _time;
+        pinMode(btn->pin, INPUT);
+    btn->state = digitalRead(btn->pin);
+    if (btn->invert != 0) btn->state = !btn->state;
+    btn->time = millis();
+    btn->lastState = btn->state;
+    btn->changed = 0;
+    btn->lastChange = btn->time;
 }
 
 /*----------------------------------------------------------------------*
  * read() returns the state of the button, 1==pressed, 0==released,     *
  * does debouncing, captures and maintains times, previous states, etc. *
  *----------------------------------------------------------------------*/
-uint8_t Button::read(void)
-{
-    static uint32_t ms;
-    static uint8_t pinVal;
+unsigned char read(struct Button* btn) {
+    static unsigned int ms;
+    static unsigned char pinVal;
 
     ms = millis();
     pinVal = digitalRead(_pin);
-    if (_invert != 0) pinVal = !pinVal;
-    if (ms - _lastChange < _dbTime) {
-        _time = ms;
-        _changed = 0;
-        return _state;
+    if (btn->invert != 0) pinVal = !pinVal;
+    if (ms - btn->lastChange < btn->dbTime) {
+        btn->time = ms;
+        btn->changed = 0;
+        return btn->state;
     }
     else {
-        _lastState = _state;
-        _state = pinVal;
-        _time = ms;
-        if (_state != _lastState)   {
-            _lastChange = ms;
-            _changed = 1;
+        btn->lastState = btn->state;
+        btn->state = pinVal;
+        btn->time = ms;
+        if (btn->state != btn->lastState)   {
+            btn->lastChange = ms;
+            btn->changed = 1;
         }
         else {
-            _changed = 0;
+            btn->changed = 0;
         }
-        return _state;
+        return btn->state;
     }
 }
 
@@ -84,14 +82,12 @@ uint8_t Button::read(void)
  * read, and return false (0) or true (!=0) accordingly.                *
  * These functions do not cause the button to be read.                  *
  *----------------------------------------------------------------------*/
-uint8_t Button::isPressed(void)
-{
-    return _state == 0 ? 0 : 1;
+unsigned char isPressed(struct Button* btn) {
+    return btn->state == 0 ? 0 : 1;
 }
 
-uint8_t Button::isReleased(void)
-{
-    return _state == 0 ? 1 : 0;
+unsigned char isReleased(struct Button* btn) {
+    return btn->state == 0 ? 1 : 0;
 }
 
 /*----------------------------------------------------------------------*
@@ -100,14 +96,12 @@ uint8_t Button::isReleased(void)
  * true (!=0) accordingly.                                              *
  * These functions do not cause the button to be read.                  *
  *----------------------------------------------------------------------*/
-uint8_t Button::wasPressed(void)
-{
-    return _state && _changed;
+unsigned char wasPressed(struct Button* btn) {
+    return btn->state && btn->changed;
 }
 
-uint8_t Button::wasReleased(void)
-{
-    return !_state && _changed;
+unsigned char wasReleased(struct Button* btn) {
+    return !btn->state && btn->changed;
 }
 
 /*----------------------------------------------------------------------*
@@ -116,21 +110,18 @@ uint8_t Button::wasReleased(void)
  * time in milliseconds. Returns false (0) or true (1) accordingly.     *
  * These functions do not cause the button to be read.                  *
  *----------------------------------------------------------------------*/
-uint8_t Button::pressedFor(uint32_t ms)
-{
-    return (_state == 1 && _time - _lastChange >= ms) ? 1 : 0;
+unsigned char pressedFor(struct Button* btn, unsigned int ms) {
+    return (btn->state == 1 && btn->time - btn->lastChange >= ms) ? 1 : 0;
 }
 
-uint8_t Button::releasedFor(uint32_t ms)
-{
-    return (_state == 0 && _time - _lastChange >= ms) ? 1 : 0;
+unsigned char releasedFor(struct Button* btn, unsigned int ms) {
+    return (btn->state == 0 && btn->time - btn->lastChange >= ms) ? 1 : 0;
 }
 
 /*----------------------------------------------------------------------*
  * lastChange() returns the time the button last changed state,         *
  * in milliseconds.                                                     *
  *----------------------------------------------------------------------*/
-uint32_t Button::lastChange(void)
-{
-    return _lastChange;
+unsigned int lastChange(struct Button* btn) {
+    return btn->lastChange;
 }

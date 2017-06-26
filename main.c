@@ -1,5 +1,9 @@
-// #include "src/Button.h"
+
 #include "src/io.h"
+#include "src/Button.h"
+// #include "src/Display7Seg.h"
+
+Button btn0;
 
 void main(void) {
 
@@ -7,7 +11,7 @@ void main(void) {
   digitalWrite(0, HIGH);
 
   while(1) {
-    
+
   }
 
 }

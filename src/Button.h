@@ -16,6 +16,8 @@ typedef struct Button{
 } Button;
 
 // Prototypes
+
+extern void setup(struct Button* btn, unsigned char pin, unsigned char puEnable, unsigned char invert, unsigned int dbTime);
 extern unsigned char read(struct Button* btn);
 extern unsigned char isPressed(struct Button* btn);
 extern unsigned char isReleased(struct Button* btn);
